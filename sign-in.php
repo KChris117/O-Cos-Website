@@ -1,0 +1,103 @@
+<?php
+session_start();
+require_once 'config.php';
+
+$error = '';
+$success = '';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = $_POST['password'];
+
+    // Check if username or email already exists
+    $check_query = "SELECT * FROM users WHERE username = '$username' OR email = '$email'";
+    $check_result = mysqli_query($conn, $check_query);
+    
+    if (mysqli_num_rows($check_result) > 0) {
+        $error = "Username atau Email sudah terdaftar!";
+    } else {
+        // Hash password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        
+        // Cek apakah tabel users masih kosong
+        $role_query = "SELECT COUNT(*) as count FROM users";
+        $role_result = mysqli_query($conn, $role_query);
+        $row = mysqli_fetch_assoc($role_result);
+        
+        $role = ($row['count'] == 0) ? 'admin' : 'user';
+
+        // Insert new user
+        $insert_query = "INSERT INTO users (username, email, password, role) VALUES ('$username', '$email', '$hashed_password', '$role')";
+        
+        if (mysqli_query($conn, $insert_query)) {
+            $success = "Registrasi berhasil! Silakan Log In.";
+        } else {
+            $error = "Terjadi kesalahan sistem: " . mysqli_error($conn);
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#d4a398" />
+  <title>Sign In (Register) - O'Cos</title>
+  <link rel="stylesheet" href="./styles/global.css"/>
+  <link rel="stylesheet" href="./styles/auth.css"/>
+</head>
+<body class="auth-page">
+
+  <div class="container" style="display: flex; justify-content: center;">
+    <div class="auth-card">
+      <a href="index.php" class="back-home">
+        <span>← Kembali ke Beranda</span>
+      </a>
+      
+      <div class="auth-header">
+        <h1 class="auth-title">Sign In</h1>
+        <p class="auth-subtitle">Buat akun baru dan nikmati pengalaman berbelanja kosmetik premium.</p>
+      </div>
+      
+      <?php if($error): ?>
+        <div style="background: #ffcccc; color: #cc0000; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+          <?php echo $error; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if($success): ?>
+        <div style="background: #ccffcc; color: #006600; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+          <?php echo $success; ?>
+        </div>
+      <?php endif; ?>
+      
+      <form class="auth-form" action="sign-in.php" method="POST">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Pilih username" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Alamat E-mail</label>
+          <input type="email" id="email" name="email" placeholder="contoh@email.com" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Buat password baru" required minlength="6" />
+        </div>
+        
+        <button type="submit" class="btn btn-primary auth-btn">Create An Account</button>
+      </form>
+      
+      <div class="auth-footer">
+        <p>Sudah punya akun? <a href="log-in.php">Log In</a></p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
