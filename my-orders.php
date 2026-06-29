@@ -90,6 +90,23 @@ $transactions = mysqli_query($conn, $query);
     }
     
     /* Modal Styling */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-50px); opacity: 0; }
+    }
+
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -103,7 +120,10 @@ $transactions = mysqli_query($conn, $query);
       z-index: 1000;
       backdrop-filter: blur(3px);
     }
-    .modal-overlay.active { display: flex; }
+    .modal-overlay.active { 
+      display: flex; 
+      animation: fadeIn 0.3s ease forwards;
+    }
     .modal-content {
       background: #fff;
       padding: 30px;
@@ -112,6 +132,15 @@ $transactions = mysqli_query($conn, $query);
       max-width: 500px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       position: relative;
+    }
+    .modal-overlay.active .modal-content {
+      animation: slideDown 0.3s ease forwards;
+    }
+    .modal-overlay.closing {
+      animation: fadeOut 0.3s ease forwards;
+    }
+    .modal-overlay.closing .modal-content {
+      animation: slideUp 0.3s ease forwards;
     }
     .modal-close {
       position: absolute;
@@ -239,7 +268,10 @@ $transactions = mysqli_query($conn, $query);
     }
     
     function closeDetailsModal() {
-      modal.classList.remove('active');
+      modal.classList.add('closing');
+      setTimeout(() => {
+        modal.classList.remove('active', 'closing');
+      }, 250);
     }
     
     modal.addEventListener('click', function(e) {

@@ -180,7 +180,7 @@ $products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
                     onclick="openEditModal(this)">
                     Edit
                   </button>
-                  <a href="dashboard-items.php?delete=<?php echo $row['id']; ?>" class="action-btn btn-delete" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
+                  <button type="button" class="action-btn btn-delete" onclick="openDeleteModal(<?php echo $row['id']; ?>)">Delete</button>
                 </td>
               </tr>
               <?php endwhile; ?>
@@ -249,8 +249,21 @@ $products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModalOverlay">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+      <h3 style="color: #c62828; margin-top: 0;">Confirm Deletion</h3>
+      <p style="color: var(--text-muted); margin-bottom: 25px;">Are you sure you want to delete this cosmetic product? This action cannot be undone.</p>
+      <div style="display: flex; gap: 15px; justify-content: center;">
+        <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeDeleteModal()">Cancel</button>
+        <a id="confirmDeleteBtn" href="#" class="btn btn-primary" style="flex: 1; background: #c62828; border: none; text-align: center; text-decoration: none; padding: 12px;">Yes, Delete</a>
+      </div>
+    </div>
+  </div>
+
   <script>
     const modalOverlay = document.getElementById('editModalOverlay');
+    const deleteModal = document.getElementById('deleteModalOverlay');
 
     function openEditModal(buttonElement) {
       // Get data from button attributes
@@ -276,13 +289,35 @@ $products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
     }
 
     function closeEditModal() {
-      modalOverlay.classList.remove('active');
+      modalOverlay.classList.add('closing');
+      setTimeout(() => {
+        modalOverlay.classList.remove('active', 'closing');
+      }, 250);
+    }
+
+    // Delete Modal Functions
+    function openDeleteModal(id) {
+      document.getElementById('confirmDeleteBtn').href = 'dashboard-items.php?delete=' + id;
+      deleteModal.classList.add('active');
+    }
+    
+    function closeDeleteModal() {
+      deleteModal.classList.add('closing');
+      setTimeout(() => {
+        deleteModal.classList.remove('active', 'closing');
+      }, 250);
     }
 
     // Close modal when clicking outside the modal box
     modalOverlay.addEventListener('click', function(e) {
       if (e.target === modalOverlay) {
         closeEditModal();
+      }
+    });
+    
+    deleteModal.addEventListener('click', function(e) {
+      if (e.target === deleteModal) {
+        closeDeleteModal();
       }
     });
   </script>

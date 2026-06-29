@@ -189,9 +189,9 @@ $transactions = mysqli_query($conn, $query);
   </main>
 
   <!-- Admin Details Modal -->
-  <div class="modal-overlay" id="adminDetailsModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);">
-    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative;">
-      <span class="modal-close" onclick="closeAdminModal()" style="position: absolute; top: 20px; right: 25px; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</span>
+  <div class="modal-overlay" id="adminDetailsModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeAdminModal()">&times;</span>
       <h3 style="margin-top: 0; color: var(--primary-dark); border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Transaction Details</h3>
       
       <div style="margin-top: 20px;">
@@ -209,11 +209,14 @@ $transactions = mysqli_query($conn, $query);
     function openAdminModal(trxId) {
       document.getElementById('admin-modal-trx-id').innerText = trxId;
       document.getElementById('admin-modal-body').innerHTML = document.getElementById('details-' + trxId).innerHTML;
-      adminModal.style.display = 'flex';
+      adminModal.classList.add('active');
     }
     
     function closeAdminModal() {
-      adminModal.style.display = 'none';
+      adminModal.classList.add('closing');
+      setTimeout(() => {
+        adminModal.classList.remove('active', 'closing');
+      }, 250);
     }
     
     adminModal.addEventListener('click', function(e) {
