@@ -108,6 +108,9 @@ if (!$product) {
         <a href="index.php#about">About Us</a>
         <a href="katalog-products.php" class="active">Catalog</a>
         <?php if(isset($_SESSION['user_id'])): ?>
+          <a href="favorites.php" style="color: var(--primary-dark); font-weight: 600;">❤️ Favorites</a>
+          <a href="my-orders.php" style="color: var(--primary-dark); font-weight: 600;">📦 My Orders</a>
+          <a href="cart.php" style="color: var(--primary-dark); font-weight: 600;">🛒 Cart</a>
           <?php if($_SESSION['role'] === 'admin'): ?>
             <a href="dashboard.php" style="color: var(--primary); font-weight: 600;">Dashboard</a>
           <?php endif; ?>
@@ -142,8 +145,32 @@ if (!$product) {
         </div>
         
         <div class="product-actions">
-          <button class="btn btn-primary">🛒 Add to Cart</button>
-          <button class="btn btn-outline">❤️ Favorite</button>
+          <?php if(isset($_SESSION['user_id'])): ?>
+            <form action="cart.php" method="POST" style="flex: 1; display: flex;">
+              <input type="hidden" name="action" value="add" />
+              <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>" />
+              <button type="submit" class="btn btn-primary" style="width: 100%;">🛒 Add to Cart</button>
+            </form>
+            
+            <?php
+            // Check if already favorited
+            $user_id = $_SESSION['user_id'];
+            $fav_check = mysqli_query($conn, "SELECT id FROM favorites WHERE user_id = $user_id AND product_id = " . $product['id']);
+            $is_favorited = mysqli_num_rows($fav_check) > 0;
+            ?>
+            <form action="favorites.php" method="POST" style="flex: 1; display: flex;">
+              <input type="hidden" name="action" value="<?php echo $is_favorited ? 'remove' : 'add'; ?>" />
+              <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>" />
+              <?php if($is_favorited): ?>
+                <button type="submit" class="btn btn-outline" style="width: 100%; background: #ffebee; color: #c62828; border-color: #ffcdd2;">❤️ Favorited</button>
+              <?php else: ?>
+                <button type="submit" class="btn btn-outline" style="width: 100%;">🤍 Favorite</button>
+              <?php endif; ?>
+            </form>
+          <?php else: ?>
+            <button class="btn btn-primary" onclick="window.location.href='log-in.php'" style="flex: 1;">🛒 Login to Buy</button>
+            <button class="btn btn-outline" onclick="window.location.href='log-in.php'" style="flex: 1;">🤍 Favorite</button>
+          <?php endif; ?>
         </div>
       </div>
     </div>

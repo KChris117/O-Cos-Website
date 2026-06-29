@@ -19,6 +19,9 @@
         <a href="index.php#about">About Us</a>
         <a href="katalog-products.php" class="active">Catalog</a>
         <?php if(isset($_SESSION['user_id'])): ?>
+          <a href="favorites.php" style="color: var(--primary-dark); font-weight: 600;">❤️ Favorites</a>
+          <a href="my-orders.php" style="color: var(--primary-dark); font-weight: 600;">📦 My Orders</a>
+          <a href="cart.php" style="color: var(--primary-dark); font-weight: 600;">🛒 Cart</a>
           <?php if($_SESSION['role'] === 'admin'): ?>
             <a href="dashboard.php" style="color: var(--primary); font-weight: 600;">Dashboard</a>
           <?php endif; ?>

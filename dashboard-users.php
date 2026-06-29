@@ -10,10 +10,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 // Ambil semua pengguna dan hitung total item (quantity) yang pernah dibeli
 $query = "
     SELECT u.id, u.username, u.email, u.role,
-           COALESCE(SUM(o.quantity), 0) AS total_items_bought,
-           COUNT(o.id) AS total_orders
+           COALESCE(SUM(td.quantity), 0) AS total_items_bought,
+           COUNT(DISTINCT t.id) AS total_orders
     FROM users u
-    LEFT JOIN orders o ON u.id = o.user_id
+    LEFT JOIN transactions t ON u.id = t.user_id
+    LEFT JOIN transaction_details td ON t.id = td.transaction_id
     GROUP BY u.id
     ORDER BY u.role ASC, u.id DESC
 ";
@@ -47,6 +48,7 @@ $users = mysqli_query($conn, $query);
 
     <nav class="sidebar-nav">
       <a href="dashboard.php">📊 Overview</a>
+      <a href="dashboard-orders.php">📦 Manage Orders</a>
       <a href="dashboard-items.php">🛍️ Manage Items</a>
       <a href="dashboard-users.php" class="active">👥 Manage Users</a>
     </nav>

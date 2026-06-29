@@ -66,6 +66,7 @@ $products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
 
     <nav class="sidebar-nav">
       <a href="dashboard.php">📊 Overview</a>
+      <a href="dashboard-orders.php">📦 Manage Orders</a>
       <a href="dashboard-items.php" class="active">🛍️ Manage Items</a>
       <a href="dashboard-users.php">👥 Manage Users</a>
     </nav>

@@ -15,6 +15,9 @@ $user_count = mysqli_fetch_assoc($user_count_query)['total'];
 $item_count_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM products");
 $item_count = mysqli_fetch_assoc($item_count_query)['total'];
 
+$order_count_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM transactions WHERE status = 'Completed'");
+$order_count = mysqli_fetch_assoc($order_count_query)['total'];
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,6 +46,7 @@ $item_count = mysqli_fetch_assoc($item_count_query)['total'];
 
     <nav class="sidebar-nav">
       <a href="dashboard.php" class="active">📊 Overview</a>
+      <a href="dashboard-orders.php">📦 Manage Orders</a>
       <a href="dashboard-items.php">🛍️ Manage Items</a>
       <a href="dashboard-users.php">👥 Manage Users</a>
     </nav>
@@ -70,7 +74,7 @@ $item_count = mysqli_fetch_assoc($item_count_query)['total'];
       </div>
       <div class="stat-card">
         <h3>Successful Orders</h3>
-        <div class="value">0</div>
+        <div class="value"><?php echo $order_count; ?></div>
       </div>
     </div>
     

@@ -29,13 +29,47 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Tabel Orders (Pesanan)
-CREATE TABLE IF NOT EXISTS `orders` (
+-- Tabel Favorites
+CREATE TABLE IF NOT EXISTS `favorites` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
   `product_id` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_product` (`user_id`, `product_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabel Transactions
+CREATE TABLE IF NOT EXISTS `transactions` (
+  `id` VARCHAR(50) NOT NULL,
+  `user_id` INT(11) NOT NULL,
+  `address` TEXT NOT NULL,
+  `total_amount` DECIMAL(10,2) NOT NULL,
+  `status` ENUM('Pending', 'On Packing', 'On Delivery', 'Completed', 'Canceled') NOT NULL DEFAULT 'Pending',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabel Transaction Details
+CREATE TABLE IF NOT EXISTS `transaction_details` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `transaction_id` VARCHAR(50) NOT NULL,
+  `product_id` INT(11) NOT NULL,
   `quantity` INT(11) NOT NULL,
-  `order_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `price` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`transaction_id`) REFERENCES `transactions`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabel Cart Items (Keranjang Belanja)
+CREATE TABLE IF NOT EXISTS `cart_items` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) NOT NULL,
+  `product_id` INT(11) NOT NULL,
+  `quantity` INT(11) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
