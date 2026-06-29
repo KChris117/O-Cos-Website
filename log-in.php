@@ -26,15 +26,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             exit();
         } else {
-            $error = "Password salah!";
+            $error = "Incorrect password!";
         }
     } else {
-        $error = "Username atau Email tidak ditemukan!";
+        $error = "Username or Email not found!";
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <link rel="icon" href="/favicon.ico" />
@@ -49,12 +49,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="container" style="display: flex; justify-content: center;">
     <div class="auth-card">
       <a href="index.php" class="back-home">
-        <span>← Kembali ke Beranda</span>
+        <span>← Back to Home</span>
       </a>
       
       <div class="auth-header">
         <h1 class="auth-title">Log In</h1>
-        <p class="auth-subtitle">Selamat datang kembali! Silakan masuk ke akun Anda.</p>
+        <p class="auth-subtitle">Welcome back! Please log in to your account.</p>
       </div>
 
       <?php if($error): ?>
@@ -66,19 +66,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <form class="auth-form" action="log-in.php" method="POST">
         <div class="form-group">
           <label for="username">Username / Email</label>
-          <input type="text" id="username" name="username" placeholder="Masukkan username Anda" required />
+          <input type="text" id="username" name="username" placeholder="Enter your username" required />
         </div>
         
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required />
+          <input type="password" id="password" name="password" placeholder="Enter your password" required />
         </div>
         
         <button type="submit" class="btn btn-primary auth-btn">Log In</button>
       </form>
       
       <div class="auth-footer">
-        <p>Belum punya akun? <a href="sign-in.php">Daftar sekarang (Sign In)</a></p>
+        <p>Don't have an account? <a href="sign-in.php">Sign Up now</a></p>
       </div>
     </div>
   </div>

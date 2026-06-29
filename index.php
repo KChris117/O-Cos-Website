@@ -1,6 +1,6 @@
 <?php session_start(); ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <link rel="icon" href="/favicon.ico" />
@@ -19,14 +19,13 @@
     <div class="container">
       <a href="index.php" class="nav-logo">O'Cos</a>
       <div class="nav-links">
-        <a href="index.php" class="active">Beranda</a>
+        <a href="index.php" class="active">Home</a>
         <a href="#about">About Us</a>
-        <a href="katalog-products.php">Katalog</a>
+        <a href="katalog-products.php">Catalog</a>
         <?php if(isset($_SESSION['user_id'])): ?>
           <?php if($_SESSION['role'] === 'admin'): ?>
             <a href="dashboard.php" style="color: var(--primary); font-weight: 600;">Dashboard</a>
           <?php endif; ?>
-          <span style="font-weight: 500;">Halo, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
           <a href="logout.php" class="btn btn-outline" style="padding: 8px 20px;">Log Out</a>
         <?php else: ?>
           <a href="log-in.php" class="btn btn-outline" style="padding: 8px 20px;">Log In</a>
@@ -40,11 +39,16 @@
     <div class="hero-bg-shape"></div>
     <div class="container" style="display: flex; align-items: center; position: relative; z-index: 1;">
       <div class="hero-content">
-        <h1 class="hero-title">Pancarkan Pesona Cantikmu</h1>
+        <?php if(isset($_SESSION['user_id'])): ?>
+          <p style="color: var(--primary-dark); font-weight: 600; font-size: 1.1rem; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase;">
+            Welcome to O'Cos, <?php echo htmlspecialchars($_SESSION['username']); ?>! ✨
+          </p>
+        <?php endif; ?>
+        <h1 class="hero-title">Radiate Your Beauty</h1>
         <p class="hero-subtitle">
-          Berbagai alat kosmetik premium untuk menunjang penampilan Anda agar selalu tampil cantik, menarik, dan menawan dengan O’Cos.
+          Various premium cosmetics to support your appearance so you always look beautiful, attractive, and stunning with O’Cos.
         </p>
-        <a href="katalog-products.php" class="btn btn-primary">Belanja Sekarang</a>
+        <a href="katalog-products.php" class="btn btn-primary">Shop Now</a>
       </div>
       <div class="hero-image">
         <!-- Using image-4.png as the hero banner -->
@@ -57,12 +61,12 @@
   <section id="about" class="about">
     <div class="container">
       <div class="about-image">
-        <img src="./assets/image-22-RxD.png" alt="Tentang O'Cos" onerror="this.src='https://images.unsplash.com/photo-1571781926291-c477eb3af723?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
+        <img src="./assets/image-22-RxD.png" alt="About O'Cos" onerror="this.src='https://images.unsplash.com/photo-1571781926291-c477eb3af723?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
       </div>
       <div class="about-text">
-        <h2>Apa sih O’Cos itu?</h2>
+        <h2>What is O’Cos?</h2>
         <p>
-          O’Cos adalah platform e-commerce eksklusif yang bergerak di bidang kosmetik. Kami menyediakan semua kebutuhan produk kecantikan premium Anda mulai dari skincare, lipstik, make-up, dan masih banyak lagi. Temukan versi terbaik dari diri Anda bersama O'Cos.
+          O’Cos is an exclusive e-commerce platform operating in the cosmetics sector. We provide all your premium beauty product needs from skincare, lipsticks, makeup, and much more. Discover the best version of yourself with O'Cos.
         </p>
       </div>
     </div>
@@ -71,32 +75,32 @@
   <!-- Benefits Section -->
   <section class="benefits">
     <div class="container">
-      <h2 class="section-title">Kenapa Memilih Kami?</h2>
-      <p class="section-subtitle">Dari membeli produk di website kami, Anda akan mendapatkan berbagai benefit utama.</p>
+      <h2 class="section-title">Why Choose Us?</h2>
+      <p class="section-subtitle">By purchasing products on our website, you will get various key benefits.</p>
       
       <div class="benefits-grid">
         <div class="benefit-card">
           <div class="benefit-icon">
-            <img src="./assets/radio.png" alt="Mitra Terbaik" onerror="this.style.display='none'; this.parentNode.innerHTML='🤝';" />
+            <img src="./assets/radio.png" alt="Best Partner" onerror="this.style.display='none'; this.parentNode.innerHTML='🤝';" />
           </div>
-          <h3>Mitra Terbaik & Terpercaya</h3>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">Kami bekerja sama dengan brand ternama dan terjamin keasliannya.</p>
+          <h3>Best & Trusted Partner</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">We partner with top brands and guarantee their authenticity.</p>
         </div>
         
         <div class="benefit-card">
           <div class="benefit-icon">
-            <img src="./assets/package.png" alt="Produk Aman" onerror="this.style.display='none'; this.parentNode.innerHTML='✨';" />
+            <img src="./assets/package.png" alt="Safe Products" onerror="this.style.display='none'; this.parentNode.innerHTML='✨';" />
           </div>
-          <h3>Produk Aman & Berkualitas</h3>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">Setiap produk melewati uji kualitas ketat demi keamanan kulit Anda.</p>
+          <h3>Safe & Quality Products</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">Every product passes strict quality tests for your skin's safety.</p>
         </div>
         
         <div class="benefit-card">
           <div class="benefit-icon">
-            <img src="./assets/group-1-FJy.png" alt="Harga Terjangkau" onerror="this.style.display='none'; this.parentNode.innerHTML='💎';" />
+            <img src="./assets/group-1-FJy.png" alt="Affordable Prices" onerror="this.style.display='none'; this.parentNode.innerHTML='💎';" />
           </div>
-          <h3>Harga Terjangkau</h3>
-          <p style="color: var(--text-muted); font-size: 0.95rem;">Dapatkan produk kosmetik premium dengan harga yang bersahabat.</p>
+          <h3>Affordable Prices</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">Get premium cosmetics at friendly and affordable prices.</p>
         </div>
       </div>
     </div>
@@ -105,46 +109,46 @@
   <!-- Categories Section -->
   <section class="categories">
     <div class="container">
-      <h2 class="section-title">Kategori Produk</h2>
-      <p class="section-subtitle">Temukan berbagai macam kategori produk sesuai kebutuhan kecantikan Anda di O’Cos.</p>
+      <h2 class="section-title">Product Categories</h2>
+      <p class="section-subtitle">Find various product categories according to your beauty needs at O’Cos.</p>
       
       <div class="categories-grid">
         <div class="category-card" onclick="window.location.href='katalog-products.php'">
-          <img src="./assets/face.png" alt="Wajah" onerror="this.src='https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=400&q=80'" />
+          <img src="./assets/face.png" alt="Face" onerror="this.src='https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=400&q=80'" />
           <div class="category-overlay">
-            <h3>WAJAH</h3>
+            <h3>FACE</h3>
           </div>
         </div>
         
         <div class="category-card" onclick="window.location.href='katalog-products.php'">
-          <img src="./assets/hair.webp" alt="Rambut" onerror="this.src='https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=400&q=80'" />
+          <img src="./assets/hair.webp" alt="Hair" onerror="this.src='https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=400&q=80'" />
           <div class="category-overlay">
-            <h3>RAMBUT</h3>
+            <h3>HAIR</h3>
           </div>
         </div>
         
         <div class="category-card" onclick="window.location.href='katalog-products.php'">
-          <img src="./assets/lips.webp" alt="Bibir" onerror="this.src='https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=400&q=80'" />
+          <img src="./assets/lips.webp" alt="Lips" onerror="this.src='https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=400&q=80'" />
           <div class="category-overlay">
-            <h3>BIBIR</h3>
+            <h3>LIPS</h3>
           </div>
         </div>
         
         <div class="category-card" onclick="window.location.href='katalog-products.php'">
-          <img src="./assets/nail.png" alt="Kuku" onerror="this.src='https://images.unsplash.com/photo-1519014816548-bf5fe059e98b?auto=format&fit=crop&w=400&q=80'" />
+          <img src="./assets/nail.png" alt="Nails" onerror="this.src='https://images.unsplash.com/photo-1519014816548-bf5fe059e98b?auto=format&fit=crop&w=400&q=80'" />
           <div class="category-overlay">
-            <h3>KUKU</h3>
+            <h3>NAILS</h3>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Brands/Jenis Produk Section -->
+  <!-- Brands Section -->
   <section class="brands">
     <div class="container">
-      <h2 class="section-title">Jenis Produk</h2>
-      <p class="section-subtitle">Terdiri dari berbagai jenis brand ternama luar negeri dan lokal pilihan.</p>
+      <h2 class="section-title">Our Brands</h2>
+      <p class="section-subtitle">Consists of various top international and selected local brands.</p>
       
       <div class="brands-slider">
         <img src="./assets/image-10.png" alt="Brand 1" onerror="this.style.display='none'" />
@@ -162,7 +166,7 @@
         <div class="footer-brand">
           <h2>O'Cos</h2>
           <p style="color: #bbb; max-width: 300px; font-weight: 300;">
-            Platform kosmetik premium yang dipercaya untuk mempercantik harimu.
+            The trusted premium cosmetics platform to beautify your day.
           </p>
           <div class="footer-social">
             <a href="#" aria-label="Facebook">F</a>
@@ -185,7 +189,7 @@
   </footer>
 
   <script>
-    // Simple script to handle navbar scroll effect
+    // Navbar scroll effect
     window.addEventListener('scroll', () => {
       const nav = document.querySelector('.navbar');
       if (window.scrollY > 50) {
@@ -195,6 +199,16 @@
         nav.style.boxShadow = 'none';
         nav.style.padding = '20px 0';
       }
+    });
+
+    // Navbar active state logic for About Us
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', function() {
+        if(!this.classList.contains('btn')) {
+          document.querySelectorAll('.nav-links a:not(.btn)').forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
     });
   </script>
 </body>

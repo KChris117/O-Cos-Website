@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $check_result = mysqli_query($conn, $check_query);
     
     if (mysqli_num_rows($check_result) > 0) {
-        $error = "Username atau Email sudah terdaftar!";
+        $error = "Username or Email is already registered!";
     } else {
         // Hash password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -31,21 +31,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $insert_query = "INSERT INTO users (username, email, password, role) VALUES ('$username', '$email', '$hashed_password', '$role')";
         
         if (mysqli_query($conn, $insert_query)) {
-            $success = "Registrasi berhasil! Silakan Log In.";
+            $success = "Registration successful! Please Log In.";
         } else {
-            $error = "Terjadi kesalahan sistem: " . mysqli_error($conn);
+            $error = "System error occurred: " . mysqli_error($conn);
         }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <link rel="icon" href="/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#d4a398" />
-  <title>Sign In (Register) - O'Cos</title>
+  <title>Sign Up - O'Cos</title>
   <link rel="stylesheet" href="./styles/global.css"/>
   <link rel="stylesheet" href="./styles/auth.css"/>
 </head>
@@ -54,12 +54,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <div class="container" style="display: flex; justify-content: center;">
     <div class="auth-card">
       <a href="index.php" class="back-home">
-        <span>← Kembali ke Beranda</span>
+        <span>← Back to Home</span>
       </a>
       
       <div class="auth-header">
-        <h1 class="auth-title">Sign In</h1>
-        <p class="auth-subtitle">Buat akun baru dan nikmati pengalaman berbelanja kosmetik premium.</p>
+        <h1 class="auth-title">Sign Up</h1>
+        <p class="auth-subtitle">Create a new account and enjoy a premium cosmetics shopping experience.</p>
       </div>
       
       <?php if($error): ?>
@@ -77,24 +77,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <form class="auth-form" action="sign-in.php" method="POST">
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" id="username" name="username" placeholder="Pilih username" required />
+          <input type="text" id="username" name="username" placeholder="Choose a username" required />
         </div>
         
         <div class="form-group">
-          <label for="email">Alamat E-mail</label>
-          <input type="email" id="email" name="email" placeholder="contoh@email.com" required />
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="example@email.com" required />
         </div>
         
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Buat password baru" required minlength="6" />
+          <input type="password" id="password" name="password" placeholder="Create a new password" required minlength="6" />
         </div>
         
         <button type="submit" class="btn btn-primary auth-btn">Create An Account</button>
       </form>
       
       <div class="auth-footer">
-        <p>Sudah punya akun? <a href="log-in.php">Log In</a></p>
+        <p>Already have an account? <a href="log-in.php">Log In</a></p>
       </div>
     </div>
   </div>

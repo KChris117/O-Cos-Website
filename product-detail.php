@@ -9,15 +9,15 @@ $product = mysqli_fetch_assoc($result);
 
 if (!$product) {
     $product = [
-        'name' => 'Produk Tidak Ditemukan',
+        'name' => 'Product Not Found',
         'price' => 0,
-        'description' => 'Maaf, produk yang Anda cari tidak tersedia. Silakan kembali ke katalog.',
+        'description' => 'Sorry, the product you are looking for is not available. Please return to the catalog.',
         'image' => 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=600&q=80'
     ];
 }
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -104,13 +104,13 @@ if (!$product) {
     <div class="container">
       <a href="index.php" class="nav-logo">O'Cos</a>
       <div class="nav-links">
-        <a href="index.php">Beranda</a>
-        <a href="katalog-products.php" class="active">Katalog</a>
+        <a href="index.php">Home</a>
+        <a href="index.php#about">About Us</a>
+        <a href="katalog-products.php" class="active">Catalog</a>
         <?php if(isset($_SESSION['user_id'])): ?>
           <?php if($_SESSION['role'] === 'admin'): ?>
             <a href="dashboard.php" style="color: var(--primary); font-weight: 600;">Dashboard</a>
           <?php endif; ?>
-          <span style="font-weight: 500;">Halo, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
           <a href="logout.php" class="btn btn-outline" style="padding: 8px 20px;">Log Out</a>
         <?php else: ?>
           <a href="log-in.php" class="btn btn-outline" style="padding: 8px 20px;">Log In</a>
@@ -121,7 +121,7 @@ if (!$product) {
 
   <div class="container">
     <div class="breadcrumb">
-      <a href="katalog-products.php">← Kembali ke Katalog</a>
+      <a href="katalog-products.php">← Back to Catalog</a>
     </div>
     
     <div class="product-detail-container">
@@ -132,7 +132,7 @@ if (!$product) {
       <div class="product-info">
         <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
         <div style="display: flex; gap: 5px; color: #f1c40f; margin-bottom: 15px;">
-          ★ ★ ★ ★ ★ <span style="color: var(--text-muted); font-size: 0.9rem; margin-left: 5px;">(50 Ulasan)</span>
+          ★ ★ ★ ★ ★ <span style="color: var(--text-muted); font-size: 0.9rem; margin-left: 5px;">(50 Reviews)</span>
         </div>
         
         <div class="product-price">Rp. <?php echo number_format($product['price'], 0, ',', '.'); ?></div>
@@ -142,8 +142,8 @@ if (!$product) {
         </div>
         
         <div class="product-actions">
-          <button class="btn btn-primary">🛒 Tambahkan ke Keranjang</button>
-          <button class="btn btn-outline">❤️ Favorit</button>
+          <button class="btn btn-primary">🛒 Add to Cart</button>
+          <button class="btn btn-outline">❤️ Favorite</button>
         </div>
       </div>
     </div>

@@ -1,10 +1,10 @@
 <?php session_start(); ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Katalog Produk - O'Cos</title>
+  <title>Product Catalog - O'Cos</title>
   <link rel="stylesheet" href="./styles/global.css"/>
   <link rel="stylesheet" href="./styles/katalog.css"/>
 </head>
@@ -15,13 +15,13 @@
     <div class="container">
       <a href="index.php" class="nav-logo">O'Cos</a>
       <div class="nav-links">
-        <a href="index.php">Beranda</a>
-        <a href="katalog-products.php" class="active">Katalog</a>
+        <a href="index.php">Home</a>
+        <a href="index.php#about">About Us</a>
+        <a href="katalog-products.php" class="active">Catalog</a>
         <?php if(isset($_SESSION['user_id'])): ?>
           <?php if($_SESSION['role'] === 'admin'): ?>
             <a href="dashboard.php" style="color: var(--primary); font-weight: 600;">Dashboard</a>
           <?php endif; ?>
-          <span style="font-weight: 500;">Halo, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
           <a href="logout.php" class="btn btn-outline" style="padding: 8px 20px;">Log Out</a>
         <?php else: ?>
           <a href="log-in.php" class="btn btn-outline" style="padding: 8px 20px;">Log In</a>
@@ -32,8 +32,8 @@
 
   <div class="container">
     <div class="katalog-header">
-      <h1 class="katalog-title">Katalog Produk O'Cos</h1>
-      <p class="katalog-subtitle">Temukan koleksi lengkap kosmetik premium untuk berbagai kebutuhan Anda.</p>
+      <h1 class="katalog-title">O'Cos Product Catalog</h1>
+      <p class="katalog-subtitle">Find a complete collection of premium cosmetics for all your needs.</p>
     </div>
     
     <div class="katalog-grid">
@@ -50,12 +50,12 @@
         <img src="<?php echo htmlspecialchars($row['image']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>" class="product-image" onerror="this.src='https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=300&q=80'" />
         <h3 class="product-name"><?php echo htmlspecialchars($row['name']); ?></h3>
         <p class="product-price">Rp. <?php echo number_format($row['price'], 0, ',', '.'); ?></p>
-        <button class="btn btn-outline product-btn" onclick="window.location.href='product-detail.php?id=<?php echo $row['id']; ?>'">Detail Produk</button>
+        <button class="btn btn-outline product-btn" onclick="window.location.href='product-detail.php?id=<?php echo $row['id']; ?>'">View Details</button>
       </div>
       <?php
           }
       } else {
-          echo "<p style='grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px;'>Belum ada produk di database. Silakan jalankan script SQL.</p>";
+          echo "<p style='grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px;'>No products found in the database.</p>";
       }
       ?>
     </div>
@@ -77,7 +77,7 @@
         <div class="footer-brand">
           <h2>O'Cos</h2>
           <p style="color: #bbb; max-width: 300px; font-weight: 300;">
-            Platform kosmetik premium yang dipercaya untuk mempercantik harimu.
+            The trusted premium cosmetics platform to beautify your day.
           </p>
         </div>
         <div class="footer-contact">
