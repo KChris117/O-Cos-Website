@@ -1,7 +1,6 @@
 /* katalog.css */
 .katalog-page {
   padding-top: 120px;
-  padding-bottom: 80px;
   background-color: var(--bg-main);
 }
 
@@ -87,6 +86,7 @@
   align-items: center;
   gap: 10px;
   margin-top: 40px;
+  margin-bottom: 80px;
 }
 
 .page-btn {
@@ -108,4 +108,104 @@
   background: var(--primary);
   color: white;
   border-color: var(--primary);
+}
+
+/* Filter Bar - Premium Redesign */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  background: white;
+  padding: 25px 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  margin-bottom: 45px;
+  align-items: center;
+  border: 1px solid rgba(230, 213, 213, 0.4);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 220px;
+}
+
+.filter-group input, .filter-group select {
+  padding: 14px 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background-color: var(--bg-card);
+  transition: all 0.3s ease;
+  color: var(--secondary);
+}
+
+.filter-group input::placeholder {
+  color: #a0a0a0;
+}
+
+.filter-group input:focus, .filter-group select:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(224, 185, 185, 0.2);
+  background-color: white;
+}
+
+.price-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex: 0 1 auto;
+  min-width: auto;
+}
+
+.price-group input {
+  width: 130px;
+  text-align: center;
+}
+
+.btn-filter {
+  height: fit-content;
+  border-radius: 12px;
+  padding: 14px 30px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(224, 185, 185, 0.4);
+}
+
+.btn-filter:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(224, 185, 185, 0.6);
+}
+
+.btn-reset {
+  height: fit-content;
+  border-radius: 12px;
+  padding: 14px 30px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px;
+    gap: 15px;
+  }
+  .filter-group {
+    width: 100%;
+    min-width: unset;
+  }
+  .price-group {
+    justify-content: space-between;
+  }
+  .price-group input {
+    width: 45%;
+  }
+  .filter-bar .btn {
+    width: 100%;
+    margin-top: 5px;
+  }
 }

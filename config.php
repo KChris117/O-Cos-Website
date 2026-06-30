@@ -8,7 +8,7 @@ $db_pass = "";           // Default password XAMPP (kosong)
 $db_name = "db_o_cos";   // Nama database sesuai kesepakatan
 
 // Membuat koneksi
-$conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name, 3306);
+$conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 
 // Mengecek koneksi
 if (!$conn) {

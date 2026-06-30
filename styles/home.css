@@ -9,6 +9,14 @@
   background-color: var(--accent);
 }
 
+.hero-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
 .hero-content {
   flex: 1;
   padding-right: 50px;
@@ -239,9 +247,12 @@
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .hero {
-    flex-direction: column;
-    padding-top: 120px;
+    padding-top: 40px;
     text-align: center;
+  }
+  .hero-container {
+    flex-direction: column;
+    justify-content: center;
   }
   .hero-content {
     padding-right: 0;
@@ -266,6 +277,11 @@
 }
 
 @media (max-width: 576px) {
+  .hero {
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
   .hero-title {
     font-size: 2.5rem;
   }

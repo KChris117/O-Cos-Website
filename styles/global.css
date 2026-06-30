@@ -154,6 +154,8 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   gap: 35px;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .nav-links a {
@@ -257,9 +259,48 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .nav-links {
-    display: none;
+    gap: 10px;
+    justify-content: center;
+  }
+  .nav-links a {
+    font-size: 0.75rem;
+    padding: 0 5px;
+  }
+  .nav-links .btn {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 0 !important;
+  }
+  .navbar {
+    position: static;
+    padding: 15px 0;
+  }
+  .navbar .container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .nav-links {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 20px;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-links a {
+    white-space: nowrap;
+  }
+  .nav-links::-webkit-scrollbar {
+    height: 0;
+    background: transparent;
   }
   .footer-content {
     grid-template-columns: 1fr;

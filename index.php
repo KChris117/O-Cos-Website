@@ -40,7 +40,7 @@
   <!-- Hero Section -->
   <header class="hero">
     <div class="hero-bg-shape"></div>
-    <div class="container" style="display: flex; align-items: center; position: relative; z-index: 1;">
+    <div class="container hero-container">
       <div class="hero-content">
         <?php if(isset($_SESSION['user_id'])): ?>
           <p style="color: var(--primary-dark); font-weight: 600; font-size: 1.1rem; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase;">
@@ -116,28 +116,28 @@
       <p class="section-subtitle">Find various product categories according to your beauty needs at O’Cos.</p>
       
       <div class="categories-grid">
-        <div class="category-card" onclick="window.location.href='katalog-products.php'">
+        <div class="category-card" onclick="window.location.href='katalog-products.php?category=FACE'">
           <img src="./assets/face.png" alt="Face" onerror="this.src='https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=400&q=80'" />
           <div class="category-overlay">
             <h3>FACE</h3>
           </div>
         </div>
         
-        <div class="category-card" onclick="window.location.href='katalog-products.php'">
+        <div class="category-card" onclick="window.location.href='katalog-products.php?category=HAIR'">
           <img src="./assets/hair.webp" alt="Hair" onerror="this.src='https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=400&q=80'" />
           <div class="category-overlay">
             <h3>HAIR</h3>
           </div>
         </div>
         
-        <div class="category-card" onclick="window.location.href='katalog-products.php'">
+        <div class="category-card" onclick="window.location.href='katalog-products.php?category=LIPS'">
           <img src="./assets/lips.webp" alt="Lips" onerror="this.src='https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=400&q=80'" />
           <div class="category-overlay">
             <h3>LIPS</h3>
           </div>
         </div>
         
-        <div class="category-card" onclick="window.location.href='katalog-products.php'">
+        <div class="category-card" onclick="window.location.href='katalog-products.php?category=NAILS'">
           <img src="./assets/nail.png" alt="Nails" onerror="this.src='https://images.unsplash.com/photo-1519014816548-bf5fe059e98b?auto=format&fit=crop&w=400&q=80'" />
           <div class="category-overlay">
             <h3>NAILS</h3>
