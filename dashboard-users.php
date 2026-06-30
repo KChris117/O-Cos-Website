@@ -51,12 +51,10 @@ $users = mysqli_query($conn, $query);
       <a href="dashboard-orders.php">📦 Manage Orders</a>
       <a href="dashboard-items.php">🛍️ Manage Items</a>
       <a href="dashboard-users.php" class="active">👥 Manage Users</a>
+      <div style="height: 1px; background: var(--border-color); margin: 15px 20px;"></div>
+      <a href="index.php">🌐 View Website</a>
+      <a href="logout.php" style="color: #c62828;">🚪 Log Out</a>
     </nav>
-
-    <div class="sidebar-footer">
-      <a href="index.php" class="btn btn-outline" style="margin-bottom: 10px; text-align: center;">View Website</a>
-      <a href="logout.php" class="btn btn-primary" style="text-align: center;">Log Out</a>
-    </div>
   </aside>
 
   <!-- Main Content -->

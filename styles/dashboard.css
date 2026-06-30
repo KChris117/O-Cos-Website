@@ -2,7 +2,7 @@
 :root {
   --sidebar-width: 250px;
   --sidebar-bg: #fff;
-  --sidebar-active: var(--primary-light);
+  --sidebar-active: var(--accent);
 }
 
 body {
@@ -38,7 +38,7 @@ body {
 }
 
 .sidebar-nav {
-  padding: 20px 0;
+  padding: 10px 0;
   flex: 1;
 }
 
@@ -46,16 +46,17 @@ body {
   display: flex;
   align-items: center;
   padding: 15px 25px;
-  color: var(--text-color);
+  color: var(--text-muted);
   text-decoration: none;
   font-weight: 500;
   transition: all 0.3s;
+  border-left: 4px solid transparent;
 }
 
 .sidebar-nav a:hover, .sidebar-nav a.active {
   background-color: var(--sidebar-active);
   color: var(--primary-dark);
-  border-right: 4px solid var(--primary);
+  border-left: 4px solid var(--primary);
 }
 
 .sidebar-footer {
@@ -316,11 +317,14 @@ body {
   .sidebar-nav a {
     padding: 10px;
     font-size: 0.85rem;
-    border-right: none;
+    border-left: none;
     border-bottom: 3px solid transparent;
   }
   .sidebar-nav a:hover, .sidebar-nav a.active {
+    background-color: var(--sidebar-active);
+    border-left: none;
     border-bottom: 3px solid var(--primary);
+    color: var(--primary-dark);
   }
   .main-content {
     margin-left: 0;
@@ -337,5 +341,37 @@ body {
   }
   .data-table th, .data-table td {
     padding: 10px;
+  }
+  
+  /* Overview Cards Pyramid */
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  .stat-card:nth-child(3) {
+    grid-column: 1 / 3;
+    max-width: 80%;
+    margin: 0 auto;
+  }
+  
+  /* Sidebar Buttons size */
+  .sidebar-footer {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 0 15px 0;
+    border-top: none;
+  }
+  .sidebar-footer .btn {
+    width: auto;
+    padding: 8px 15px;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+  }
+  
+  /* Modal/Form Button Size */
+  .modal-content .btn, .form-card .btn {
+    padding: 10px;
+    font-size: 0.9rem;
   }
 }

@@ -157,7 +157,7 @@ $total_items = 0;
       <a href="index.php" class="nav-logo">O'Cos</a>
       <div class="nav-links">
         <a href="index.php">Home</a>
-        <a href="index.php#about">About Us</a>
+        <a href="about-us.php">About Us</a>
         <a href="katalog-products.php">Catalog</a>
         <a href="favorites.php" style="color: var(--primary-dark); font-weight: 600;">❤️ Favorites</a>
         <a href="my-orders.php" style="color: var(--primary-dark); font-weight: 600;">📦 My Orders</a>

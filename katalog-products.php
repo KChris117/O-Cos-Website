@@ -16,7 +16,7 @@
       <a href="index.php" class="nav-logo">O'Cos</a>
       <div class="nav-links">
         <a href="index.php">Home</a>
-        <a href="index.php#about">About Us</a>
+        <a href="about-us.php">About Us</a>
         <a href="katalog-products.php" class="active">Catalog</a>
         <?php if(isset($_SESSION['user_id'])): ?>
           <a href="favorites.php" style="color: var(--primary-dark); font-weight: 600;">❤️ Favorites</a>
@@ -160,11 +160,18 @@
           <p style="color: #bbb; max-width: 300px; font-weight: 300;">
             The trusted premium cosmetics platform to beautify your day.
           </p>
+          <div class="footer-social">
+            <a href="#" aria-label="Facebook">F</a>
+            <a href="#" aria-label="Twitter">T</a>
+            <a href="#" aria-label="Instagram">I</a>
+          </div>
         </div>
+        
         <div class="footer-contact">
           <h3>Contact Us</h3>
           <p>📧 O'Cos@company.id</p>
           <p>📍 Jl. Batu Besar No 101/Blok C</p>
+          <p>📞 +62 812 3456 7890</p>
         </div>
       </div>
       <div class="footer-bottom">

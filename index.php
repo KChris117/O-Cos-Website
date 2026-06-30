@@ -20,7 +20,7 @@
       <a href="index.php" class="nav-logo">O'Cos</a>
       <div class="nav-links">
         <a href="index.php" class="active">Home</a>
-        <a href="#about">About Us</a>
+        <a href="about-us.php">About Us</a>
         <a href="katalog-products.php">Catalog</a>
         <?php if(isset($_SESSION['user_id'])): ?>
           <a href="favorites.php" style="color: var(--primary-dark); font-weight: 600;">❤️ Favorites</a>
@@ -64,7 +64,7 @@
   <section id="about" class="about">
     <div class="container">
       <div class="about-image">
-        <img src="./assets/image-22-RxD.png" alt="About O'Cos" onerror="this.src='https://images.unsplash.com/photo-1571781926291-c477eb3af723?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
+        <img src="./assets/image-22.png" alt="About O'Cos" onerror="this.src='https://images.unsplash.com/photo-1571781926291-c477eb3af723?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'" />
       </div>
       <div class="about-text">
         <h2>What is O’Cos?</h2>
@@ -155,8 +155,8 @@
       
       <div class="brands-slider">
         <img src="./assets/image-10.png" alt="Brand 1" onerror="this.style.display='none'" />
-        <img src="./assets/image-12-sEH.png" alt="Brand 2" onerror="this.style.display='none'" />
-        <img src="./assets/image-14-Dpd.png" alt="Brand 3" onerror="this.style.display='none'" />
+        <img src="./assets/image-12.png" alt="Brand 2" onerror="this.style.display='none'" />
+        <img src="./assets/image-14.png" alt="Brand 3" onerror="this.style.display='none'" />
         <img src="./assets/image-13.png" alt="Brand 4" onerror="this.style.display='none'" />
       </div>
     </div>

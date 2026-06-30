@@ -97,6 +97,7 @@
 
 .about-text {
   flex: 1;
+  text-align: center;
 }
 
 .about-text h2 {
