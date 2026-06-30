@@ -287,20 +287,11 @@ h1, h2, h3, h4, h5, h6 {
     gap: 15px;
   }
   .nav-links {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
-    gap: 20px;
-    padding-bottom: 5px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .nav-links a {
-    white-space: nowrap;
-  }
-  .nav-links::-webkit-scrollbar {
-    height: 0;
-    background: transparent;
+    gap: 15px;
+    padding-bottom: 10px;
   }
   .footer-content {
     grid-template-columns: 1fr;
