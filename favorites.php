@@ -12,14 +12,19 @@ $user_id = intval($_SESSION['user_id']);
 
 // Handle actions: Add or Remove
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
+    verify_csrf_token($_POST['csrf_token'] ?? '');
     $action = $_POST['action'];
     $product_id = intval($_POST['product_id']);
     
     if ($action === 'add') {
         // Insert if not exists (using IGNORE to prevent duplicate error if somehow submitted twice)
-        mysqli_query($conn, "INSERT IGNORE INTO favorites (user_id, product_id) VALUES ($user_id, $product_id)");
+        $stmt_add = mysqli_prepare($conn, "INSERT IGNORE INTO favorites (user_id, product_id) VALUES (?, ?)");
+        mysqli_stmt_bind_param($stmt_add, "ii", $user_id, $product_id);
+        mysqli_stmt_execute($stmt_add);
     } elseif ($action === 'remove') {
-        mysqli_query($conn, "DELETE FROM favorites WHERE user_id = $user_id AND product_id = $product_id");
+        $stmt_rem = mysqli_prepare($conn, "DELETE FROM favorites WHERE user_id = ? AND product_id = ?");
+        mysqli_stmt_bind_param($stmt_rem, "ii", $user_id, $product_id);
+        mysqli_stmt_execute($stmt_rem);
     }
     
     // Redirect back to referring page or favorites
@@ -32,14 +37,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch Favorited Items
-$query = "
+$stmt_fetch = mysqli_prepare($conn, "
     SELECT f.id as fav_id, p.id as product_id, p.name, p.price, p.image 
     FROM favorites f
     JOIN products p ON f.product_id = p.id
-    WHERE f.user_id = $user_id
+    WHERE f.user_id = ?
     ORDER BY f.id DESC
-";
-$favorites = mysqli_query($conn, $query);
+");
+mysqli_stmt_bind_param($stmt_fetch, "i", $user_id);
+mysqli_stmt_execute($stmt_fetch);
+$favorites = mysqli_stmt_get_result($stmt_fetch);
 
 ?>
 <!DOCTYPE html>
@@ -92,6 +99,7 @@ $favorites = mysqli_query($conn, $query);
             
             <!-- Remove from favorites -->
             <form action="favorites.php" method="POST" style="flex: 1;">
+              <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
               <input type="hidden" name="action" value="remove" />
               <input type="hidden" name="product_id" value="<?php echo $row['product_id']; ?>" />
               <button type="submit" class="btn btn-outline product-btn" style="margin-top: 0; background: #ffebee; color: #c62828; border-color: #ffcdd2;" title="Remove">✖</button>

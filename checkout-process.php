@@ -7,17 +7,21 @@ if (!isset($_SESSION['user_id']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
+verify_csrf_token($_POST['csrf_token'] ?? '');
+
 $user_id = intval($_SESSION['user_id']);
-$address = mysqli_real_escape_string($conn, $_POST['address']);
+$address = $_POST['address'];
 
 // Fetch Cart Items
-$query = "
+$stmt_fetch = mysqli_prepare($conn, "
     SELECT c.product_id, c.quantity, p.price, p.stock
     FROM cart_items c
     JOIN products p ON c.product_id = p.id
-    WHERE c.user_id = $user_id
-";
-$cart_items = mysqli_query($conn, $query);
+    WHERE c.user_id = ?
+");
+mysqli_stmt_bind_param($stmt_fetch, "i", $user_id);
+mysqli_stmt_execute($stmt_fetch);
+$cart_items = mysqli_stmt_get_result($stmt_fetch);
 
 if(mysqli_num_rows($cart_items) == 0) {
     header("Location: cart.php");
@@ -46,24 +50,33 @@ mysqli_begin_transaction($conn);
 
 try {
     // 1. Insert into transactions
-    $insert_trx = "INSERT INTO transactions (id, user_id, address, total_amount, status) VALUES ('$trx_id', $user_id, '$address', $total_amount, 'Pending')";
-    mysqli_query($conn, $insert_trx);
+    $status = 'Pending';
+    $stmt_trx = mysqli_prepare($conn, "INSERT INTO transactions (id, user_id, address, total_amount, status) VALUES (?, ?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt_trx, "sisds", $trx_id, $user_id, $address, $total_amount, $status);
+    mysqli_stmt_execute($stmt_trx);
     
     // 2. Insert into transaction_details & Update Stock
+    $stmt_det = mysqli_prepare($conn, "INSERT INTO transaction_details (transaction_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
+    $stmt_stock = mysqli_prepare($conn, "UPDATE products SET stock = stock - ? WHERE id = ?");
+    
     foreach($items as $item) {
         $p_id = $item['product_id'];
         $qty = $item['quantity'];
         $price = $item['price'];
         
         // Detail
-        mysqli_query($conn, "INSERT INTO transaction_details (transaction_id, product_id, quantity, price) VALUES ('$trx_id', $p_id, $qty, $price)");
+        mysqli_stmt_bind_param($stmt_det, "siid", $trx_id, $p_id, $qty, $price);
+        mysqli_stmt_execute($stmt_det);
         
         // Stock Deduction
-        mysqli_query($conn, "UPDATE products SET stock = stock - $qty WHERE id = $p_id");
+        mysqli_stmt_bind_param($stmt_stock, "ii", $qty, $p_id);
+        mysqli_stmt_execute($stmt_stock);
     }
     
     // 3. Clear Cart
-    mysqli_query($conn, "DELETE FROM cart_items WHERE user_id = $user_id");
+    $stmt_clear = mysqli_prepare($conn, "DELETE FROM cart_items WHERE user_id = ?");
+    mysqli_stmt_bind_param($stmt_clear, "i", $user_id);
+    mysqli_stmt_execute($stmt_clear);
     
     // Commit all changes
     mysqli_commit($conn);

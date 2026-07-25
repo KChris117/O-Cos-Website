@@ -3,8 +3,10 @@ session_start();
 require_once 'config.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 1;
-$query = "SELECT * FROM products WHERE id = $id LIMIT 1";
-$result = mysqli_query($conn, $query);
+$stmt_prod = mysqli_prepare($conn, "SELECT * FROM products WHERE id = ? LIMIT 1");
+mysqli_stmt_bind_param($stmt_prod, "i", $id);
+mysqli_stmt_execute($stmt_prod);
+$result = mysqli_stmt_get_result($stmt_prod);
 $product = mysqli_fetch_assoc($result);
 
 if (!$product) {
@@ -147,6 +149,7 @@ if (!$product) {
         <div class="product-actions">
           <?php if(isset($_SESSION['user_id'])): ?>
             <form action="cart.php" method="POST" style="flex: 1; display: flex;">
+              <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
               <input type="hidden" name="action" value="add" />
               <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>" />
               <button type="submit" class="btn btn-primary" style="width: 100%;">🛒 Add to Cart</button>
@@ -155,10 +158,14 @@ if (!$product) {
             <?php
             // Check if already favorited
             $user_id = $_SESSION['user_id'];
-            $fav_check = mysqli_query($conn, "SELECT id FROM favorites WHERE user_id = $user_id AND product_id = " . $product['id']);
+            $stmt_fav = mysqli_prepare($conn, "SELECT id FROM favorites WHERE user_id = ? AND product_id = ?");
+            mysqli_stmt_bind_param($stmt_fav, "ii", $user_id, $product['id']);
+            mysqli_stmt_execute($stmt_fav);
+            $fav_check = mysqli_stmt_get_result($stmt_fav);
             $is_favorited = mysqli_num_rows($fav_check) > 0;
             ?>
             <form action="favorites.php" method="POST" style="flex: 1; display: flex;">
+              <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
               <input type="hidden" name="action" value="<?php echo $is_favorited ? 'remove' : 'add'; ?>" />
               <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>" />
               <?php if($is_favorited): ?>

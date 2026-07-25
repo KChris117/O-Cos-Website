@@ -7,37 +7,49 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// Hapus Item (Delete)
-if(isset($_GET['delete'])) {
-    $id = intval($_GET['delete']);
-    mysqli_query($conn, "DELETE FROM products WHERE id = $id");
+// Hapus Item (Delete) via POST to support CSRF
+if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    verify_csrf_token($_POST['csrf_token'] ?? '');
+    $id = intval($_POST['delete_id']);
+    
+    $stmt_del = mysqli_prepare($conn, "DELETE FROM products WHERE id = ?");
+    mysqli_stmt_bind_param($stmt_del, "i", $id);
+    mysqli_stmt_execute($stmt_del);
     header("Location: dashboard-items.php");
     exit();
 }
 
 // Tambah (Create) atau Edit (Update) Item
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $category = mysqli_real_escape_string($conn, $_POST['category']);
+if($_SERVER['REQUEST_METHOD'] == 'POST' && (!isset($_POST['action']) || $_POST['action'] !== 'delete')) {
+    verify_csrf_token($_POST['csrf_token'] ?? '');
+    
+    $name = $_POST['name'];
+    $category = $_POST['category'];
     $price = $_POST['price'];
     $stock = $_POST['stock'];
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-    $image = mysqli_real_escape_string($conn, $_POST['image']);
+    $description = $_POST['description'];
+    $image = $_POST['image'];
     
     if(isset($_POST['id']) && !empty($_POST['id'])) {
         // UPDATE
         $id = intval($_POST['id']);
-        mysqli_query($conn, "UPDATE products SET name='$name', category='$category', price='$price', stock='$stock', description='$description', image='$image' WHERE id=$id");
+        $stmt_upd = mysqli_prepare($conn, "UPDATE products SET name=?, category=?, price=?, stock=?, description=?, image=? WHERE id=?");
+        mysqli_stmt_bind_param($stmt_upd, "ssiissi", $name, $category, $price, $stock, $description, $image, $id);
+        mysqli_stmt_execute($stmt_upd);
     } else {
         // CREATE
-        mysqli_query($conn, "INSERT INTO products (name, category, price, stock, description, image) VALUES ('$name', '$category', '$price', '$stock', '$description', '$image')");
+        $stmt_ins = mysqli_prepare($conn, "INSERT INTO products (name, category, price, stock, description, image) VALUES (?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt_ins, "ssiiss", $name, $category, $price, $stock, $description, $image);
+        mysqli_stmt_execute($stmt_ins);
     }
     header("Location: dashboard-items.php");
     exit();
 }
 
 // Ambil semua produk
-$products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
+$stmt_all = mysqli_prepare($conn, "SELECT * FROM products ORDER BY id DESC");
+mysqli_stmt_execute($stmt_all);
+$products = mysqli_stmt_get_result($stmt_all);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -86,6 +98,7 @@ $products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
       <h3 style="margin-top: 0; color: var(--primary-dark);">Add New Item</h3>
       
       <form action="dashboard-items.php" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
           <div class="form-group">
             <label>Product Name</label>
@@ -200,6 +213,7 @@ $products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
       <h3 style="margin-top: 0; color: var(--primary-dark);">Edit Item Details</h3>
       
       <form action="dashboard-items.php" method="POST" id="editForm">
+        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
         <!-- Hidden ID for update -->
         <input type="hidden" name="id" id="edit-id" value="" />
         
@@ -252,10 +266,15 @@ $products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
     <div class="modal-content" style="max-width: 400px; text-align: center;">
       <h3 style="color: #c62828; margin-top: 0;">Confirm Deletion</h3>
       <p style="color: var(--text-muted); margin-bottom: 25px;">Are you sure you want to delete this cosmetic product? This action cannot be undone.</p>
-      <div style="display: flex; gap: 15px; justify-content: center;">
-        <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeDeleteModal()">Cancel</button>
-        <a id="confirmDeleteBtn" href="#" class="btn btn-primary" style="flex: 1; background: #c62828; border: none; text-align: center; text-decoration: none; padding: 12px;">Yes, Delete</a>
-      </div>
+      <form action="dashboard-items.php" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+        <input type="hidden" name="action" value="delete" />
+        <input type="hidden" name="delete_id" id="delete-id" value="" />
+        <div style="display: flex; gap: 15px; justify-content: center;">
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeDeleteModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="flex: 1; background: #c62828; border: none; text-align: center; text-decoration: none; padding: 12px;">Yes, Delete</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -295,7 +314,7 @@ $products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
 
     // Delete Modal Functions
     function openDeleteModal(id) {
-      document.getElementById('confirmDeleteBtn').href = 'dashboard-items.php?delete=' + id;
+      document.getElementById('delete-id').value = id;
       deleteModal.classList.add('active');
     }
     

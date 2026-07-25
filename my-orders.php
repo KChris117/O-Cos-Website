@@ -11,11 +11,14 @@ $user_id = intval($_SESSION['user_id']);
 
 // Handle Cancellation by User
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'cancel') {
-    $trx_id = mysqli_real_escape_string($conn, $_POST['trx_id']);
+    verify_csrf_token($_POST['csrf_token'] ?? '');
+    $trx_id = $_POST['trx_id'];
     
     // Verify it belongs to user and is Pending
-    $check_q = "SELECT status FROM transactions WHERE id = '$trx_id' AND user_id = $user_id";
-    $check_res = mysqli_query($conn, $check_q);
+    $stmt_check = mysqli_prepare($conn, "SELECT status FROM transactions WHERE id = ? AND user_id = ?");
+    mysqli_stmt_bind_param($stmt_check, "si", $trx_id, $user_id);
+    mysqli_stmt_execute($stmt_check);
+    $check_res = mysqli_stmt_get_result($stmt_check);
     
     if (mysqli_num_rows($check_res) > 0) {
         $trx = mysqli_fetch_assoc($check_res);
@@ -23,14 +26,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
             mysqli_begin_transaction($conn);
             try {
                 // Update status to Canceled
-                mysqli_query($conn, "UPDATE transactions SET status = 'Canceled' WHERE id = '$trx_id'");
+                $stmt_upd = mysqli_prepare($conn, "UPDATE transactions SET status = 'Canceled' WHERE id = ?");
+                mysqli_stmt_bind_param($stmt_upd, "s", $trx_id);
+                mysqli_stmt_execute($stmt_upd);
                 
                 // Return Stock
-                $details = mysqli_query($conn, "SELECT product_id, quantity FROM transaction_details WHERE transaction_id = '$trx_id'");
+                $stmt_det = mysqli_prepare($conn, "SELECT product_id, quantity FROM transaction_details WHERE transaction_id = ?");
+                mysqli_stmt_bind_param($stmt_det, "s", $trx_id);
+                mysqli_stmt_execute($stmt_det);
+                $details = mysqli_stmt_get_result($stmt_det);
+                
+                $stmt_stock = mysqli_prepare($conn, "UPDATE products SET stock = stock + ? WHERE id = ?");
                 while($d = mysqli_fetch_assoc($details)) {
                     $pid = $d['product_id'];
                     $qty = $d['quantity'];
-                    mysqli_query($conn, "UPDATE products SET stock = stock + $qty WHERE id = $pid");
+                    mysqli_stmt_bind_param($stmt_stock, "ii", $qty, $pid);
+                    mysqli_stmt_execute($stmt_stock);
                 }
                 
                 mysqli_commit($conn);
@@ -44,8 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
 }
 
 // Fetch all transactions for user
-$query = "SELECT * FROM transactions WHERE user_id = $user_id ORDER BY created_at DESC";
-$transactions = mysqli_query($conn, $query);
+$stmt_fetch = mysqli_prepare($conn, "SELECT * FROM transactions WHERE user_id = ? ORDER BY created_at DESC");
+mysqli_stmt_bind_param($stmt_fetch, "i", $user_id);
+mysqli_stmt_execute($stmt_fetch);
+$transactions = mysqli_stmt_get_result($stmt_fetch);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -221,6 +234,7 @@ $transactions = mysqli_query($conn, $query);
           
           <?php if($trx['status'] === 'Pending'): ?>
             <form action="my-orders.php" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+              <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
               <input type="hidden" name="action" value="cancel" />
               <input type="hidden" name="trx_id" value="<?php echo $trx_id; ?>" />
               <button type="submit" class="btn btn-outline" style="padding: 8px 15px; font-size: 0.85rem; background: #ffebee; color: #c62828; border-color: #ffcdd2;">Cancel Order</button>

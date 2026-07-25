@@ -9,11 +9,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 // Handle Status Change
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'update_status') {
-    $trx_id = mysqli_real_escape_string($conn, $_POST['trx_id']);
-    $new_status = mysqli_real_escape_string($conn, $_POST['status']);
+    verify_csrf_token($_POST['csrf_token'] ?? '');
+    $trx_id = $_POST['trx_id'];
+    $new_status = $_POST['status'];
     
     // Check current status
-    $trx_res = mysqli_query($conn, "SELECT status FROM transactions WHERE id = '$trx_id'");
+    $stmt_check = mysqli_prepare($conn, "SELECT status FROM transactions WHERE id = ?");
+    mysqli_stmt_bind_param($stmt_check, "s", $trx_id);
+    mysqli_stmt_execute($stmt_check);
+    $trx_res = mysqli_stmt_get_result($stmt_check);
+    
     if(mysqli_num_rows($trx_res) > 0) {
         $current = mysqli_fetch_assoc($trx_res)['status'];
         
@@ -21,12 +26,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
         if ($new_status === 'Canceled' && $current !== 'Canceled') {
             mysqli_begin_transaction($conn);
             try {
-                mysqli_query($conn, "UPDATE transactions SET status = 'Canceled' WHERE id = '$trx_id'");
-                $details = mysqli_query($conn, "SELECT product_id, quantity FROM transaction_details WHERE transaction_id = '$trx_id'");
+                $stmt_upd = mysqli_prepare($conn, "UPDATE transactions SET status = 'Canceled' WHERE id = ?");
+                mysqli_stmt_bind_param($stmt_upd, "s", $trx_id);
+                mysqli_stmt_execute($stmt_upd);
+                
+                $stmt_det = mysqli_prepare($conn, "SELECT product_id, quantity FROM transaction_details WHERE transaction_id = ?");
+                mysqli_stmt_bind_param($stmt_det, "s", $trx_id);
+                mysqli_stmt_execute($stmt_det);
+                $details = mysqli_stmt_get_result($stmt_det);
+                
+                $stmt_stock = mysqli_prepare($conn, "UPDATE products SET stock = stock + ? WHERE id = ?");
                 while($d = mysqli_fetch_assoc($details)) {
                     $pid = $d['product_id'];
                     $qty = $d['quantity'];
-                    mysqli_query($conn, "UPDATE products SET stock = stock + $qty WHERE id = $pid");
+                    mysqli_stmt_bind_param($stmt_stock, "ii", $qty, $pid);
+                    mysqli_stmt_execute($stmt_stock);
                 }
                 mysqli_commit($conn);
             } catch (Exception $e) {
@@ -34,7 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
             }
         } else {
             // Normal update
-            mysqli_query($conn, "UPDATE transactions SET status = '$new_status' WHERE id = '$trx_id'");
+            $stmt_norm = mysqli_prepare($conn, "UPDATE transactions SET status = ? WHERE id = ?");
+            mysqli_stmt_bind_param($stmt_norm, "ss", $new_status, $trx_id);
+            mysqli_stmt_execute($stmt_norm);
         }
     }
     header("Location: dashboard-orders.php");
@@ -42,13 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['a
 }
 
 // Fetch all transactions
-$query = "
+$stmt_all = mysqli_prepare($conn, "
     SELECT t.*, u.username 
     FROM transactions t 
     JOIN users u ON t.user_id = u.id 
     ORDER BY t.created_at DESC
-";
-$transactions = mysqli_query($conn, $query);
+");
+mysqli_stmt_execute($stmt_all);
+$transactions = mysqli_stmt_get_result($stmt_all);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -143,7 +160,10 @@ $transactions = mysqli_query($conn, $query);
                     <ul style="padding-left: 20px; margin: 0; font-size: 0.9rem; color: var(--primary-dark);">
                     <?php 
                       $trx_id = $row['id'];
-                      $details = mysqli_query($conn, "SELECT td.quantity, p.name FROM transaction_details td JOIN products p ON td.product_id = p.id WHERE td.transaction_id = '$trx_id'");
+                      $stmt_det = mysqli_prepare($conn, "SELECT td.quantity, p.name FROM transaction_details td JOIN products p ON td.product_id = p.id WHERE td.transaction_id = ?");
+                      mysqli_stmt_bind_param($stmt_det, "s", $trx_id);
+                      mysqli_stmt_execute($stmt_det);
+                      $details = mysqli_stmt_get_result($stmt_det);
                       while($item = mysqli_fetch_assoc($details)) {
                         echo "<li><strong>{$item['quantity']}x</strong> " . htmlspecialchars($item['name']) . "</li>";
                       }
@@ -158,6 +178,7 @@ $transactions = mysqli_query($conn, $query);
                 <td>
                   <?php if($row['status'] !== 'Canceled' && $row['status'] !== 'Completed'): ?>
                   <form action="dashboard-orders.php" method="POST" style="display: flex; gap: 5px;">
+                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                     <input type="hidden" name="action" value="update_status">
                     <input type="hidden" name="trx_id" value="<?php echo $row['id']; ?>">
                     <select name="status" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color);">

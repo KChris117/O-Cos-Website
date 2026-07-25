@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 // Ambil semua pengguna dan hitung total item (quantity) yang pernah dibeli
-$query = "
+$stmt_users = mysqli_prepare($conn, "
     SELECT u.id, u.username, u.email, u.role,
            COALESCE(SUM(td.quantity), 0) AS total_items_bought,
            COUNT(DISTINCT t.id) AS total_orders
@@ -17,8 +17,9 @@ $query = "
     LEFT JOIN transaction_details td ON t.id = td.transaction_id
     GROUP BY u.id
     ORDER BY u.role ASC, u.id DESC
-";
-$users = mysqli_query($conn, $query);
+");
+mysqli_stmt_execute($stmt_users);
+$users = mysqli_stmt_get_result($stmt_users);
 
 ?>
 <!DOCTYPE html>

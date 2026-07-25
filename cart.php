@@ -12,21 +12,30 @@ $user_id = intval($_SESSION['user_id']);
 
 // Handle actions: Add, Update, Delete
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
+    verify_csrf_token($_POST['csrf_token'] ?? '');
+    
     $action = $_POST['action'];
     
     if ($action === 'add') {
         $product_id = intval($_POST['product_id']);
         
         // Check if item already exists in cart
-        $check_q = "SELECT id, quantity FROM cart_items WHERE user_id = $user_id AND product_id = $product_id";
-        $check_res = mysqli_query($conn, $check_q);
+        $stmt_check = mysqli_prepare($conn, "SELECT id, quantity FROM cart_items WHERE user_id = ? AND product_id = ?");
+        mysqli_stmt_bind_param($stmt_check, "ii", $user_id, $product_id);
+        mysqli_stmt_execute($stmt_check);
+        $check_res = mysqli_stmt_get_result($stmt_check);
         
         if (mysqli_num_rows($check_res) > 0) {
             $row = mysqli_fetch_assoc($check_res);
             $new_qty = $row['quantity'] + 1;
-            mysqli_query($conn, "UPDATE cart_items SET quantity = $new_qty WHERE id = " . $row['id']);
+            
+            $stmt_update = mysqli_prepare($conn, "UPDATE cart_items SET quantity = ? WHERE id = ?");
+            mysqli_stmt_bind_param($stmt_update, "ii", $new_qty, $row['id']);
+            mysqli_stmt_execute($stmt_update);
         } else {
-            mysqli_query($conn, "INSERT INTO cart_items (user_id, product_id, quantity) VALUES ($user_id, $product_id, 1)");
+            $stmt_insert = mysqli_prepare($conn, "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, 1)");
+            mysqli_stmt_bind_param($stmt_insert, "ii", $user_id, $product_id);
+            mysqli_stmt_execute($stmt_insert);
         }
         
         // Redirect to avoid form resubmission on refresh
@@ -37,28 +46,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         $cart_id = intval($_POST['cart_id']);
         $new_qty = intval($_POST['quantity']);
         if ($new_qty > 0) {
-            mysqli_query($conn, "UPDATE cart_items SET quantity = $new_qty WHERE id = $cart_id AND user_id = $user_id");
+            $stmt_update = mysqli_prepare($conn, "UPDATE cart_items SET quantity = ? WHERE id = ? AND user_id = ?");
+            mysqli_stmt_bind_param($stmt_update, "iii", $new_qty, $cart_id, $user_id);
+            mysqli_stmt_execute($stmt_update);
         }
         header("Location: cart.php");
         exit();
     }
     elseif ($action === 'delete') {
         $cart_id = intval($_POST['cart_id']);
-        mysqli_query($conn, "DELETE FROM cart_items WHERE id = $cart_id AND user_id = $user_id");
+        $stmt_del = mysqli_prepare($conn, "DELETE FROM cart_items WHERE id = ? AND user_id = ?");
+        mysqli_stmt_bind_param($stmt_del, "ii", $cart_id, $user_id);
+        mysqli_stmt_execute($stmt_del);
         header("Location: cart.php");
         exit();
     }
 }
 
 // Fetch Cart Items
-$query = "
+$stmt_fetch = mysqli_prepare($conn, "
     SELECT c.id as cart_id, c.quantity, p.id as product_id, p.name, p.price, p.image, p.stock
     FROM cart_items c
     JOIN products p ON c.product_id = p.id
-    WHERE c.user_id = $user_id
+    WHERE c.user_id = ?
     ORDER BY c.id DESC
-";
-$cart_items = mysqli_query($conn, $query);
+");
+mysqli_stmt_bind_param($stmt_fetch, "i", $user_id);
+mysqli_stmt_execute($stmt_fetch);
+$cart_items = mysqli_stmt_get_result($stmt_fetch);
 
 $total_price = 0;
 $total_items = 0;
@@ -192,6 +207,7 @@ $total_items = 0;
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <!-- Update Quantity Form -->
                   <form action="cart.php" method="POST" class="qty-controls">
+                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                     <input type="hidden" name="action" value="update">
                     <input type="hidden" name="cart_id" value="<?php echo $item['cart_id']; ?>">
                     <input type="number" name="quantity" class="qty-input" value="<?php echo $item['quantity']; ?>" min="1" max="<?php echo $item['stock']; ?>">
@@ -203,6 +219,7 @@ $total_items = 0;
                   
                   <!-- Delete Item Form -->
                   <form action="cart.php" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="cart_id" value="<?php echo $item['cart_id']; ?>">
                     <button type="submit" class="btn btn-sm" style="background: #ffebee; color: #c62828; border: none; cursor: pointer;">Remove</button>

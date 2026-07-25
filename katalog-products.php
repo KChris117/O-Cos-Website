@@ -73,23 +73,34 @@
       $offset = ($page - 1) * $limit;
 
       // Filter processing
-      $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, trim($_GET['search'])) : '';
-      $category = isset($_GET['category']) ? mysqli_real_escape_string($conn, trim($_GET['category'])) : '';
+      $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+      $category = isset($_GET['category']) ? trim($_GET['category']) : '';
       $min_price = isset($_GET['min_price']) ? (int)$_GET['min_price'] : 0;
       $max_price = isset($_GET['max_price']) ? (int)$_GET['max_price'] : 0;
 
       $where_clauses = [];
+      $params = [];
+      $types = "";
+
       if ($search !== '') {
-          $where_clauses[] = "name LIKE '%$search%'";
+          $where_clauses[] = "name LIKE ?";
+          $params[] = "%$search%";
+          $types .= "s";
       }
       if ($category !== '') {
-          $where_clauses[] = "category = '$category'";
+          $where_clauses[] = "category = ?";
+          $params[] = $category;
+          $types .= "s";
       }
       if ($min_price > 0) {
-          $where_clauses[] = "price >= $min_price";
+          $where_clauses[] = "price >= ?";
+          $params[] = $min_price;
+          $types .= "i";
       }
       if ($max_price > 0) {
-          $where_clauses[] = "price <= $max_price";
+          $where_clauses[] = "price <= ?";
+          $params[] = $max_price;
+          $types .= "i";
       }
 
       $where_sql = "";
@@ -99,15 +110,31 @@
 
       // Calculate total pages
       $count_query = "SELECT COUNT(*) as total FROM products $where_sql";
-      $count_result = mysqli_query($conn, $count_query);
+      $stmt_count = mysqli_prepare($conn, $count_query);
+      if ($types) {
+          mysqli_stmt_bind_param($stmt_count, $types, ...$params);
+      }
+      mysqli_stmt_execute($stmt_count);
+      $count_result = mysqli_stmt_get_result($stmt_count);
       $count_row = mysqli_fetch_assoc($count_result);
       $total_products = $count_row['total'];
       
       // Ensure at least 1 page is shown even if empty
       $total_pages = max(1, ceil($total_products / $limit));
 
-      $query = "SELECT * FROM products $where_sql ORDER BY id ASC LIMIT $limit OFFSET $offset";
-      $result = mysqli_query($conn, $query);
+      $query = "SELECT * FROM products $where_sql ORDER BY id ASC LIMIT ? OFFSET ?";
+      $stmt_prod = mysqli_prepare($conn, $query);
+      if ($types) {
+          $all_types = $types . "ii";
+          $all_params = $params;
+          $all_params[] = $limit;
+          $all_params[] = $offset;
+          mysqli_stmt_bind_param($stmt_prod, $all_types, ...$all_params);
+      } else {
+          mysqli_stmt_bind_param($stmt_prod, "ii", $limit, $offset);
+      }
+      mysqli_stmt_execute($stmt_prod);
+      $result = mysqli_stmt_get_result($stmt_prod);
 
       if (mysqli_num_rows($result) > 0) {
           while ($row = mysqli_fetch_assoc($result)) {

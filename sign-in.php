@@ -6,13 +6,17 @@ $error = '';
 $success = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    verify_csrf_token($_POST['csrf_token'] ?? '');
+
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
     // Check if username or email already exists
-    $check_query = "SELECT * FROM users WHERE username = '$username' OR email = '$email'";
-    $check_result = mysqli_query($conn, $check_query);
+    $stmt_check = mysqli_prepare($conn, "SELECT * FROM users WHERE username = ? OR email = ?");
+    mysqli_stmt_bind_param($stmt_check, "ss", $username, $email);
+    mysqli_stmt_execute($stmt_check);
+    $check_result = mysqli_stmt_get_result($stmt_check);
     
     if (mysqli_num_rows($check_result) > 0) {
         $error = "Username or Email is already registered!";
@@ -28,9 +32,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $role = ($row['count'] == 0) ? 'admin' : 'user';
 
         // Insert new user
-        $insert_query = "INSERT INTO users (username, email, password, role) VALUES ('$username', '$email', '$hashed_password', '$role')";
+        $stmt_insert = mysqli_prepare($conn, "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt_insert, "ssss", $username, $email, $hashed_password, $role);
         
-        if (mysqli_query($conn, $insert_query)) {
+        if (mysqli_stmt_execute($stmt_insert)) {
             $success = "Registration successful! Please Log In.";
         } else {
             $error = "System error occurred: " . mysqli_error($conn);
@@ -75,6 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <?php endif; ?>
       
       <form class="auth-form" action="sign-in.php" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
         <div class="form-group">
           <label for="username">Username</label>
           <input type="text" id="username" name="username" placeholder="Choose a username" required />

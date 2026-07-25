@@ -43,15 +43,26 @@ This project was proudly developed as a final project by **Semester 1 Informatic
 
 ## ⚙️ How to Run Locally
 
+### Option 1: Using XAMPP (Standard)
 1. Clone this repository:
    ```bash
    git clone https://github.com/yourusername/o-cos-website.git
    ```
-2. Move the project folder to your local server directory (e.g., `htdocs` for XAMPP or `www` for WAMP).
-3. Start **Apache** and **MySQL** from your XAMPP/WAMP Control Panel.
+2. Move the project folder to your local server directory (e.g., `htdocs` for XAMPP).
+3. Start **Apache** and **MySQL** from your XAMPP Control Panel.
 4. Open **phpMyAdmin** (`http://localhost/phpmyadmin`) and create a new database named `db_o_cos`.
 5. Import the `db_o_cos.sql` file provided in this repository into the database.
 6. Open your browser and navigate to `http://localhost/O-Cos-Website/` (adjust the folder name if different).
+
+### Option 2: Using Docker (Containerization)
+This project is fully containerized and Docker-ready.
+1. Ensure you have Docker and Docker Compose installed.
+2. Open your terminal in the project directory.
+3. Run the following command to build and start the containers:
+   ```bash
+   docker-compose up -d
+   ```
+4. The web application will be accessible at `http://localhost:8080`. The database is automatically initialized.
 
 ## 🔒 Default Admin Account (For Testing)
 * **Email:** `offelmarbun@gmail.com`

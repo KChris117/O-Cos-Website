@@ -9,14 +9,17 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 // Ambil statistik sederhana
-$user_count_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM users WHERE role = 'user'");
-$user_count = mysqli_fetch_assoc($user_count_query)['total'];
+$stmt_users = mysqli_prepare($conn, "SELECT COUNT(*) as total FROM users WHERE role = 'user'");
+mysqli_stmt_execute($stmt_users);
+$user_count = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_users))['total'];
 
-$item_count_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM products");
-$item_count = mysqli_fetch_assoc($item_count_query)['total'];
+$stmt_items = mysqli_prepare($conn, "SELECT COUNT(*) as total FROM products");
+mysqli_stmt_execute($stmt_items);
+$item_count = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_items))['total'];
 
-$order_count_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM transactions WHERE status = 'Completed'");
-$order_count = mysqli_fetch_assoc($order_count_query)['total'];
+$stmt_orders = mysqli_prepare($conn, "SELECT COUNT(*) as total FROM transactions WHERE status = 'Completed'");
+mysqli_stmt_execute($stmt_orders);
+$order_count = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_orders))['total'];
 
 ?>
 <!DOCTYPE html>

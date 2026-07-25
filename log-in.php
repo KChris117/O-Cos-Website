@@ -5,11 +5,15 @@ require_once 'config.php';
 $error = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username_email = mysqli_real_escape_string($conn, $_POST['username']);
+    verify_csrf_token($_POST['csrf_token'] ?? '');
+
+    $username_email = trim($_POST['username']);
     $password = $_POST['password'];
 
-    $query = "SELECT * FROM users WHERE username = '$username_email' OR email = '$username_email'";
-    $result = mysqli_query($conn, $query);
+    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE username = ? OR email = ?");
+    mysqli_stmt_bind_param($stmt, "ss", $username_email, $username_email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if (mysqli_num_rows($result) == 1) {
         $user = mysqli_fetch_assoc($result);
@@ -64,6 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <?php endif; ?>
       
       <form class="auth-form" action="log-in.php" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
         <div class="form-group">
           <label for="username">Username / Email</label>
           <input type="text" id="username" name="username" placeholder="Enter your username" required />

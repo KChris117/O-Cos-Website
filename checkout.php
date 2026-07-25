@@ -10,13 +10,15 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = intval($_SESSION['user_id']);
 
 // Fetch Cart Items
-$query = "
+$stmt = mysqli_prepare($conn, "
     SELECT c.quantity, p.name, p.price, p.stock
     FROM cart_items c
     JOIN products p ON c.product_id = p.id
-    WHERE c.user_id = $user_id
-";
-$cart_items = mysqli_query($conn, $query);
+    WHERE c.user_id = ?
+");
+mysqli_stmt_bind_param($stmt, "i", $user_id);
+mysqli_stmt_execute($stmt);
+$cart_items = mysqli_stmt_get_result($stmt);
 
 if(mysqli_num_rows($cart_items) == 0) {
     // If cart is empty, redirect back
@@ -51,6 +53,7 @@ $total_price = 0;
       </div>
       
       <form class="auth-form" action="checkout-process.php" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
         <div class="form-group">
           <label>Full Name</label>
           <input type="text" value="<?php echo htmlspecialchars($_SESSION['username']); ?>" readonly style="background: #f1f3f4; cursor: not-allowed;" />
