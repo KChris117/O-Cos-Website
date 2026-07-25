@@ -1,3 +1,13 @@
+> [!IMPORTANT]
+> **PENGUMUMAN UNTUK ASESOR/PENGUJI SERTIKOM:**
+> Proyek final yang telah di-update untuk memenuhi standar keamanan (SQL Injection Prevention, CSRF Protection) dan Best Practice berada di branch terpisah. 
+> 
+> 👉 **[KLIK DI SINI UNTUK MENUJU BRANCH FOR_SERTIKOM_SESSION](https://github.com/KChris117/O-Cos-Website/tree/For_Sertikom_Session)** 👈
+>
+> Harap lakukan penilaian pada branch tersebut. Terima kasih!
+
+---
+
 <div align="center">
   <h1>✨ O'Cos - Premium Cosmetics E-Commerce</h1>
   <p>An exclusive and modern e-commerce platform dedicated to premium cosmetics, skincare, and beauty products.</p>
@@ -46,7 +56,7 @@ This project was proudly developed as a final project by **Semester 1 Informatic
 ### Option 1: Using XAMPP (Standard)
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/o-cos-website.git
+   git clone https://github.com/KChris117/O-Cos-Website.git
    ```
 2. Move the project folder to your local server directory (e.g., `htdocs` for XAMPP).
 3. Start **Apache** and **MySQL** from your XAMPP Control Panel.
